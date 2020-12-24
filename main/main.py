@@ -8,17 +8,23 @@ import numpy as np
 import pygame
 import sys
 
+
+
+
+
+
+#Color Palette
 WHITE=(255,255,255)
 BLACK=(0,0,0)
-
-GREY=(133,133,133)
-RED=(170,20,35)
-BLUE=(75,95,160)
-GREEN=(150,180,150)
 BACKGROUND = WHITE
 
+RED = (247,82,95)
+YELLOW = (255,215,104)
+BLUE = 	(58,141,222)
+GREY=(113,113,113)
 
 # Ball Constructor
+
 class Ball(pygame.sprite.Sprite):
     def __init__(
         self,
@@ -89,10 +95,13 @@ class Ball(pygame.sprite.Sprite):
 
 
     # how long does infection last & mortality rate 
-    def infection(self, infection_time=200, death_rate=0.02):
+    def infection(self, infection_time=200, death_rate=0.05):
         self.infected=True
         self.infection_time=infection_time
         self.death_rate=death_rate
+
+
+# SIMULATION
 
 class Sim:
     def __init__(self, width=800, height=600):
@@ -104,9 +113,11 @@ class Sim:
         self.recovered_container = pygame.sprite.Group()
         self.population_container = pygame.sprite.Group()
 
-        self.steps = 2000
-        self.infection_time = 200
-        self.death_rate = 0.02
+        #fixed time
+        #self.steps = 2000
+
+        self.infection_time = 300
+        self.death_rate = 0.05
 
     def start(self):
 
@@ -117,7 +128,7 @@ class Sim:
             x = np.random.randint(6, self.WIDTH-6)
             y = np.random.randint(6, self.HEIGHT-6)
 
-            # velocity ordered pair, 2 numbers between -2 and 2
+            # random velocity ordered pair, between -2 and 2
             vel = np.random.rand(2)*4-2
 
             ball = Ball(x,y, self.WIDTH, self.HEIGHT, color=GREY, velocity=vel)
@@ -159,7 +170,7 @@ class Sim:
             screen.fill(BACKGROUND)
 
             # Likelihood to pass on virus
-            probability = 0.05
+            probability = 0.075
             num = np.random.rand()
             if num >= 1 - probability:
                 infected_collision_group = pygame.sprite.groupcollide(
@@ -183,7 +194,7 @@ class Sim:
             recovered=[]
             for ball in self.infected_container:
                 if ball.recovered:
-                    new_ball = ball.respawn(GREEN)
+                    new_ball = ball.respawn(BLUE)
                     self.recovered_container.add(new_ball)
                     self.population_container.add(new_ball)
                     recovered.append(ball)
@@ -196,11 +207,12 @@ class Sim:
             pygame.display.flip()
             clock.tick(30)
 
-        pygame.quit()
+        #fixed time
+        #pygame.quit()
 
 if __name__ == "__main__":
     sim = Sim()
-    sim.n_susceptible=299
+    sim.n_susceptible=349
     sim.n_infected=1
 
     sim.start()
