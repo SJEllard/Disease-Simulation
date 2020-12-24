@@ -22,9 +22,18 @@ RED = (247,82,95)
 YELLOW = (255,215,104)
 BLUE = 	(58,141,222)
 GREY=(113,113,113)
+LIGHT_GREY=(223,223,223)
+
+# Disease & Simulation Parameters
+infection_time = 300
+infection_prob = 0.1
+death_rate = 0.05
+starting_pop = 400
+simulation_length = 3000
+
+percentage_quarantine = .66
 
 # Ball Constructor
-
 class Ball(pygame.sprite.Sprite):
     def __init__(
         self,
@@ -58,7 +67,6 @@ class Ball(pygame.sprite.Sprite):
     def update(self):
 
         self.pos += self.vel
-
         x,y=self.pos
 
         # Bounce off the walls
@@ -82,7 +90,6 @@ class Ball(pygame.sprite.Sprite):
                 else:
                     self.recovered = True
 
-
     def respawn(self,color,radius=5):
         return Ball(
             self.rect.x,
@@ -92,17 +99,13 @@ class Ball(pygame.sprite.Sprite):
             color=color,
             velocity=self.vel
         )
-
-
-    # how long does infection last & mortality rate 
-    def infection(self, infection_time=200, death_rate=0.05):
+ 
+    def infection(self, infection_time=infection_time, death_rate=death_rate):
         self.infected=True
         self.infection_time=infection_time
         self.death_rate=death_rate
 
-
 # SIMULATION
-
 class Sim:
     def __init__(self, width=800, height=600):
         self.WIDTH=width
@@ -114,14 +117,15 @@ class Sim:
         self.population_container = pygame.sprite.Group()
 
         #fixed time
-        #self.steps = 2000
+        self.simulation_length = simulation_length
 
-        self.infection_time = 300
-        self.death_rate = 0.05
+        self.infection_time = infection_time
+        self.death_rate = death_rate
+
+        self.n_quarantined = 0
 
     def start(self):
-
-        self.n=self.n_susceptible+self.n_infected
+        self.n=self.n_susceptible+self.n_infected+self.n_quarantined
 
         for b in range(self.n_susceptible):
             #random location not on edge
@@ -148,31 +152,69 @@ class Sim:
             self.infected_container.add(ball)
             self.population_container.add(ball)
 
+        # People who quarantine 
+        for b in range(self.n_quarantined):
+            x = np.random.randint(6, self.WIDTH-6)
+            y = np.random.randint(6, self.HEIGHT-6)
+
+            # or just [0,0]
+            vel = np.random.rand(2)*0.1-0.05
+
+            ball = Ball(x,y, self.WIDTH, self.HEIGHT, color=GREY, velocity=vel)
+            
+            self.susceptible_container.add(ball)
+            self.population_container.add(ball)
+
         pygame.init()
         screen = pygame.display.set_mode((self.WIDTH,self.HEIGHT))
-        clock = pygame.time.Clock()
         pygame.display.set_caption("Disease Simulation")
-
-        # Icon, image by Freepik: https://www.freepik.com/
+        
+        # Icon by Freepik: https://www.freepik.com/
         icon = pygame.image.load('/Users/Shane/projects/diseasesim/Disease-Simulation/images/coronavirus.png')
         pygame.display.set_icon(icon)
 
+
+
+        graph = pygame.Surface((self.WIDTH//4,self.HEIGHT//4))
+        graph.fill(LIGHT_GREY)
+        graph.set_alpha(230)
+        graph_position = (self.WIDTH//40,self.HEIGHT//40)
+
+        clock = pygame.time.Clock()
+
         # SIM LOOP
-        turn_on = True
-        while turn_on:
+        for k in range(self.simulation_length):
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    turn_on = False
+                    run = False
                     pygame.quit()
                     sys.exit()
 
             self.population_container.update()
             screen.fill(BACKGROUND)
 
+            # update graph 
+            graph_height = graph.get_height()
+            graph_width = graph.get_width()
+
+            n_infected = len(self.infected_container)
+            n_population = len(self.population_container)
+            n_recovered = len(self.recovered_container)
+
+            t = int((k/self.simulation_length)*graph_width)
+            y_infected = int(graph_height-(n_infected/n_population)*graph_height)
+            y_dead = int(((self.n - n_population)/self.n)*graph_height)
+            y_recovered = int((n_recovered/n_population)*graph_height)
+            
+            graph_fig = pygame.PixelArray(graph)
+            graph_fig[t, y_infected:] = pygame.Color(*RED)
+            graph_fig[t, :y_dead] = pygame.Color(*YELLOW)
+            graph_fig[t, y_dead:y_dead+y_recovered] = pygame.Color(*BLUE)
+
+            
             # Likelihood to pass on virus
-            probability = 0.075
             num = np.random.rand()
-            if num >= 1 - probability:
+            if num >= 1 - infection_prob:
                 infected_collision_group = pygame.sprite.groupcollide(
                     self.susceptible_container,
                     self.infected_container,
@@ -182,8 +224,21 @@ class Sim:
 
                 for ball in infected_collision_group:
                     new_ball = ball.respawn(RED)
-                    ball.vel = np.random.rand(2)*4-2
-                    new_ball.vel = np.random.rand(2)*4-2
+                    num = np.random.rand()
+                    if num > percentage_quarantine:
+                        ball.vel = np.random.rand(2)*4-2
+                    else:
+                        # or [0,0]
+                        ball.vel = np.random.rand(2)*0.1-0.05
+                    
+
+                    num = np.random.rand()
+                    if num > percentage_quarantine:
+                        new_ball.vel = np.random.rand(2)*4-2
+                    else:
+                        # or [0,0]
+                        new_ball.vel = np.random.rand(2)*0.1-0.05
+
                     new_ball.infection(
                             self.infection_time,
                             self.death_rate
@@ -204,15 +259,29 @@ class Sim:
                 self.population_container.remove(*recovered)
 
             self.population_container.draw(screen)
+
+            del graph_fig
+            graph.unlock()
+            screen.blit(graph, graph_position)
+
             pygame.display.flip()
             clock.tick(30)
 
-        #fixed time
-        #pygame.quit()
+        after = True
+        while after:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    run = False
+                    pygame.quit()
+                    sys.exit()
+            pygame.display.update()
 
+        print('This shouldn\'t print')
+
+#turn this into start button
 if __name__ == "__main__":
     sim = Sim()
-    sim.n_susceptible=349
+    sim.n_susceptible=int(starting_pop-starting_pop*percentage_quarantine)
     sim.n_infected=1
-
+    sim.n_quarantined=int(starting_pop*percentage_quarantine)
     sim.start()
