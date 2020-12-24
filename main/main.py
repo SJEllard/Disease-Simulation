@@ -1,17 +1,12 @@
 """
 Disease Simulation
 
-
+Last updated: 2020-12-23
 """
 
 import numpy as np
 import pygame
 import sys
-
-
-
-
-
 
 #Color Palette
 WHITE=(255,255,255)
