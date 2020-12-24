@@ -1,14 +1,15 @@
 """
-Disease Simulation
+Pandemic/Disease Simulation
 
-Last updated: 2020-12-23
+
+Last updated: 2020-12-24
 """
 
 import numpy as np
 import pygame
 import sys
 
-#Color Palette
+# Color Palette
 WHITE=(255,255,255)
 BLACK=(0,0,0)
 BACKGROUND = WHITE
@@ -20,13 +21,21 @@ GREY=(113,113,113)
 LIGHT_GREY=(223,223,223)
 
 # Disease & Simulation Parameters
-infection_time = 300
-infection_prob = 0.1
-death_rate = 0.05
-starting_pop = 400
-simulation_length = 3000
+infection_time = 400
+infection_prob = 0.15
+death_rate = 0.075
+starting_pop = 600
+simulation_length = 2300
 
-percentage_quarantine = .66
+percentage_quarantine = .67
+
+# Text variables
+starting_pop = starting_pop
+deaths = 0
+attack_rate = 0
+n_recovered = 0
+n_infected = 0
+
 
 # Ball Constructor
 class Ball(pygame.sprite.Sprite):
@@ -162,13 +171,14 @@ class Sim:
 
         pygame.init()
         screen = pygame.display.set_mode((self.WIDTH,self.HEIGHT))
+
+        sim_font = pygame.font.Font("freesansbold.ttf",12)
+
         pygame.display.set_caption("Disease Simulation")
         
         # Icon by Freepik: https://www.freepik.com/
         icon = pygame.image.load('/Users/Shane/projects/diseasesim/Disease-Simulation/images/coronavirus.png')
         pygame.display.set_icon(icon)
-
-
 
         graph = pygame.Surface((self.WIDTH//4,self.HEIGHT//4))
         graph.fill(LIGHT_GREY)
@@ -178,23 +188,37 @@ class Sim:
         clock = pygame.time.Clock()
 
         # SIM LOOP
-        for k in range(self.simulation_length):
+        simulate = True
+        k=0
+        while simulate:
+            #for k in range(self.simulation_length):
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    run = False
+                    simulate = False
                     pygame.quit()
                     sys.exit()
 
             self.population_container.update()
             screen.fill(BACKGROUND)
 
-            # update graph 
+            # update graph variables
             graph_height = graph.get_height()
             graph_width = graph.get_width()
 
             n_infected = len(self.infected_container)
             n_population = len(self.population_container)
             n_recovered = len(self.recovered_container)
+
+            # update stat variables
+            starting_pop = self.n
+            deaths = starting_pop - n_population
+            attack_rate = (n_infected+n_recovered+deaths)/starting_pop
+
+            k+=1
+            if k >= self.simulation_length:
+                break
+
+            #update graph 
 
             t = int((k/self.simulation_length)*graph_width)
             y_infected = int(graph_height-(n_infected/n_population)*graph_height)
@@ -206,7 +230,6 @@ class Sim:
             graph_fig[t, :y_dead] = pygame.Color(*YELLOW)
             graph_fig[t, y_dead:y_dead+y_recovered] = pygame.Color(*BLUE)
 
-            
             # Likelihood to pass on virus
             num = np.random.rand()
             if num >= 1 - infection_prob:
@@ -259,8 +282,26 @@ class Sim:
             graph.unlock()
             screen.blit(graph, graph_position)
 
+            #update text
+            
+            population_text = sim_font.render(f"Inital Population: {starting_pop}",True,BLACK)
+            screen.blit(population_text,(20,167))
+
+            deaths_text = sim_font.render(f"Deaths: {deaths}",True,BLACK)
+            screen.blit(deaths_text,(20,215))
+
+            attackrate_text = sim_font.render(f"Attack Rate: {round(attack_rate,4)}",True,BLACK)
+            screen.blit(attackrate_text,(20,179))
+
+            infected_text = sim_font.render(f"Currently Infected: {n_infected}",True,BLACK)
+            screen.blit(infected_text,(20,191))
+
+            recovered_text = sim_font.render(f"Recovered: {n_recovered}",True,BLACK)
+            screen.blit(recovered_text,(20,203))            
+
             pygame.display.flip()
             clock.tick(30)
+            
 
         after = True
         while after:
@@ -269,14 +310,29 @@ class Sim:
                     run = False
                     pygame.quit()
                     sys.exit()
+            
+            self.population_container.update()
+            screen.fill(BACKGROUND)
+
+            self.population_container.draw(screen)
+
+            screen.blit(graph, graph_position)
+
+            screen.blit(population_text,(20,167))
+            screen.blit(deaths_text,(20,215))
+            screen.blit(attackrate_text,(20,179))
+            screen.blit(infected_text,(20,191))
+            screen.blit(recovered_text,(20,203))
+
             pygame.display.update()
+            clock.tick(30)
 
         print('This shouldn\'t print')
 
 #turn this into start button
 if __name__ == "__main__":
     sim = Sim()
-    sim.n_susceptible=int(starting_pop-starting_pop*percentage_quarantine)
+    sim.n_susceptible=int(starting_pop-starting_pop*percentage_quarantine - 1)
     sim.n_infected=1
     sim.n_quarantined=int(starting_pop*percentage_quarantine)
     sim.start()
