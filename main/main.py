@@ -3,6 +3,12 @@ Pandemic/Disease Simulation
 
 
 Last updated: 2020-12-24
+
+Possible updates:
+- Add increased death rate if certain % of population infected (hospital capicity)
+- Add start, stop buttons
+- Let user input parameter values on screen
+- Fix sticking on wall
 """
 
 import numpy as np
@@ -22,12 +28,12 @@ LIGHT_GREY=(223,223,223)
 
 # Disease & Simulation Parameters
 infection_time = 400
-infection_prob = 0.15
+infection_prob = 0.05
 death_rate = 0.075
 starting_pop = 600
 simulation_length = 2300
 
-percentage_quarantine = .67
+percentage_quarantine = .75
 
 # Text variables
 starting_pop = starting_pop
