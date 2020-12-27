@@ -1,14 +1,19 @@
 """
-Pandemic/Disease Simulation
+Pandemic/Disease Simulation: 
+Simulates the spread of a virus. The simulation starts with
+some population of "healthy balls" and one (or more) "infected balls", which float around
+the screen in a random direction. If an infected ball collides with a healthy ball there
+is some chance it passes on the infection. User can choose for some percent of the population
+to "quarantine" (move at near zero velocity), time of infection, probability of infection, and 
+some other paramters. Some basic results & stats are graphed/displayed on the screen
 
+Last updated: 2020-12-27
 
-Last updated: 2020-12-24
-
-Possible updates:
+Possible future updates:
 - Add increased death rate if certain % of population infected (hospital capicity)
 - Add start, stop buttons
-- Let user input parameter values on screen
-- Fix sticking on wall
+- Let user input parameter values on menu screen
+- Fix sticking on wall & top left corner flashing ball bug
 """
 
 import numpy as np
@@ -21,7 +26,7 @@ BLACK=(0,0,0)
 BACKGROUND = WHITE
 
 RED = (247,82,95)
-YELLOW = (255,215,104)
+YELLOW = (214,198,1)
 BLUE = 	(58,141,222)
 GREY=(113,113,113)
 LIGHT_GREY=(223,223,223)
@@ -29,7 +34,7 @@ LIGHT_GREY=(223,223,223)
 # Disease & Simulation Parameters
 infection_time = 400
 infection_prob = 0.05
-death_rate = 0.075
+death_rate = 0.25
 starting_pop = 600
 simulation_length = 2300
 
@@ -135,12 +140,14 @@ class Sim:
         self.n_quarantined = 0
 
     def start(self):
+
         self.n=self.n_susceptible+self.n_infected+self.n_quarantined
 
+        # populate healthy, non quarantine, balls
         for b in range(self.n_susceptible):
             #random location not on edge
-            x = np.random.randint(6, self.WIDTH-6)
-            y = np.random.randint(6, self.HEIGHT-6)
+            x = np.random.randint(10, self.WIDTH-10)
+            y = np.random.randint(10, self.HEIGHT-10)
 
             # random velocity ordered pair, between -2 and 2
             vel = np.random.rand(2)*4-2
@@ -150,9 +157,12 @@ class Sim:
             self.susceptible_container.add(ball)
             self.population_container.add(ball)
 
+        # populate infected ball(s)
         for b in range(self.n_infected):
-            x = np.random.randint(5, self.WIDTH-5)
-            y = np.random.randint(5, self.HEIGHT-5)
+            # could instead choose to start infected ball in center to remove
+            # random initial condition
+            x = np.random.randint(10, self.WIDTH-10)
+            y = np.random.randint(10, self.HEIGHT-10)
 
             vel = np.random.rand(2)*4-2
 
@@ -162,10 +172,10 @@ class Sim:
             self.infected_container.add(ball)
             self.population_container.add(ball)
 
-        # People who quarantine 
+        # populate healthy, quarantine, balls
         for b in range(self.n_quarantined):
-            x = np.random.randint(6, self.WIDTH-6)
-            y = np.random.randint(6, self.HEIGHT-6)
+            x = np.random.randint(10, self.WIDTH-10)
+            y = np.random.randint(10, self.HEIGHT-10)
 
             # or just [0,0]
             vel = np.random.rand(2)*0.1-0.05
@@ -196,6 +206,7 @@ class Sim:
         # SIM LOOP
         simulate = True
         k=0
+
         while simulate:
             #for k in range(self.simulation_length):
             for event in pygame.event.get():
@@ -308,7 +319,8 @@ class Sim:
             pygame.display.flip()
             clock.tick(30)
             
-
+        # After sim is complete, stay on sim screen, have balls bouncing around but 
+        # disease mechanics turned off, lets user look at graph & stats
         after = True
         while after:
             for event in pygame.event.get():
@@ -333,7 +345,7 @@ class Sim:
             pygame.display.update()
             clock.tick(30)
 
-        print('This shouldn\'t print')
+        print('This shouldn\'t print')        
 
 #turn this into start button
 if __name__ == "__main__":
