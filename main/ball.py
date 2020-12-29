@@ -4,7 +4,6 @@ import pygame
 # Color Palette
 WHITE=(255,255,255)
 BLACK=(0,0,0)
-BACKGROUND = WHITE
 
 RED = (247,82,95)
 YELLOW = (214,198,1)
@@ -15,20 +14,13 @@ LIGHT_GREY=(223,223,223)
 # Ball Constructor
 class Ball(pygame.sprite.Sprite):
     def __init__(
-        self,
-        x,
-        y,
-        width,
-        height,
-        color=GREY,
-        radius=5,
-        velocity=[0,0],
+        self,x,y,width,height,color=GREY,radius=5,velocity=[0,0]
     ):
         super().__init__()
         self.image = pygame.Surface(
             [radius*2,radius*2]
         )
-        self.image.fill(BACKGROUND)
+        self.image.fill(-1)
         pygame.draw.circle(
             self.image, color, (radius, radius), radius
         )

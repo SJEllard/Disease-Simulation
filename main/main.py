@@ -1,5 +1,5 @@
 """
-Epidemic Simulation: 
+Epidemic Simulator: 
 Simulates the spread of a virus. The simulation starts with
 some population of "healthy balls" and one (or more) "infected balls", which float around
 the screen in a random direction. If an infected ball collides with a healthy ball there
@@ -26,11 +26,11 @@ import pygame
 import sys
 import math 
 
-
 # Color Palette
 WHITE=(255,255,255)
+WHITE2=(247,247,247)
 BLACK=(0,0,0)
-BACKGROUND = WHITE
+BACKGROUND = WHITE2
 
 RED = (247,82,95)
 YELLOW = (214,198,1)
@@ -43,7 +43,7 @@ infection_time = 400
 infection_prob = 0.05
 death_rate = 0.25
 starting_pop = 600
-simulation_length = 2300
+simulation_length = 3500
 
 percentage_quarantine = .75
 
@@ -170,7 +170,7 @@ class Sim:
         sim_font = pygame.font.Font("freesansbold.ttf",12)
         sim_font_med = pygame.font.Font("freesansbold.ttf",20)
 
-        pygame.display.set_caption("Epidemic Simulation")
+        pygame.display.set_caption("Epidemic Simulator")
         
         # Icon by Freepik: https://www.freepik.com/
         icon = pygame.image.load('/Users/Shane/projects/diseasesim/Disease-Simulation/images/coronavirus.png')
@@ -227,10 +227,10 @@ class Sim:
 
             k+=1
             if k >= self.simulation_length:
+                print('Simulation Complete')
                 break
 
             #update graph 
-
             t = int((k/self.simulation_length)*graph_width)
             y_infected = int(graph_height-(n_infected/n_population)*graph_height)
             y_dead = int(((self.n - n_population)/self.n)*graph_height)
@@ -274,7 +274,6 @@ class Sim:
                     self.infected_container.add(new_ball)
                     self.population_container.add(new_ball)
             
-
             recovered=[]
             for ball in self.infected_container:
                 if ball.recovered:
@@ -297,7 +296,6 @@ class Sim:
             menu_text = sim_font_med.render('Menu',True,BLACK)
             pygame.draw.rect(screen, LIGHT_GREY, menu_button)
             screen.blit(menu_text, (menu_button.x+35,menu_button.y+7))
-            
             
             #update text
             
@@ -385,7 +383,7 @@ def menu():
     death_rate = 0.075     
     percentage_quarantine = 0.66
 
-    simulation_length = 2500
+    simulation_length = 3500
 
     population_size_text = str(starting_pop)
     infection_time_text = str(infection_time)
@@ -393,11 +391,16 @@ def menu():
     death_rate_text = str(death_rate)
     percentage_quarantine_text = str(percentage_quarantine)
 
-    population_input_rect = pygame.Rect(460,440,100,26)
-    infection_time_input_rect = pygame.Rect(460,400,100,26)
-    infection_prob_input_rect = pygame.Rect(460,280,100,26)
-    death_rate_input_rect = pygame.Rect(460,320,100,26)
-    percentage_quarantine_input_rect = pygame.Rect(460,360,100,26)
+    population_input_rect = pygame.Rect(460,460,100,26)
+    population_back_rect = pygame.Rect(460,460,100,26)
+    infection_time_input_rect = pygame.Rect(460,420,100,26)
+    infection_time_back_rect = pygame.Rect(460,420,100,26)
+    infection_prob_input_rect = pygame.Rect(460,300,100,26)
+    infection_prob_back_rect = pygame.Rect(460,300,100,26)
+    death_rate_input_rect = pygame.Rect(460,340,100,26)
+    death_rate_back_rect = pygame.Rect(460,340,100,26)
+    percentage_quarantine_input_rect = pygame.Rect(460,380,100,26)
+    percentage_quarantine_back_rect = pygame.Rect(460,380,100,26)
 
     start_button = pygame.Rect(340,525,120,32)
 
@@ -550,10 +553,10 @@ def menu():
                         percentage_quarantine_text += event.unicode
 
         # Inputs
-
         # flag if wrong input type
         flag = False
 
+        pygame.draw.rect(screen,WHITE,population_back_rect)
         if pop_text_active == True:
             pygame.draw.rect(screen, GREY, population_input_rect,1)
         else:
@@ -568,7 +571,8 @@ def menu():
         except:
             pygame.draw.rect(screen, RED, population_input_rect,1)
             flag = True
-
+        
+        pygame.draw.rect(screen, WHITE, infection_time_back_rect)
         if infection_time_text_active == True:
             pygame.draw.rect(screen, GREY, infection_time_input_rect,1)
         else:
@@ -584,6 +588,7 @@ def menu():
             pygame.draw.rect(screen, RED, infection_time_input_rect,1)
             flag = True
 
+        pygame.draw.rect(screen, WHITE, infection_prob_back_rect)
         if infection_prob_text_active == True:
             pygame.draw.rect(screen, GREY, infection_prob_input_rect,1)
         else:
@@ -599,6 +604,7 @@ def menu():
             pygame.draw.rect(screen, RED, infection_prob_input_rect,1)
             flag = True
 
+        pygame.draw.rect(screen, WHITE, death_rate_back_rect)
         if death_rate_text_active == True:
             pygame.draw.rect(screen, GREY, death_rate_input_rect,1)
         else:
@@ -614,6 +620,7 @@ def menu():
             pygame.draw.rect(screen, RED, death_rate_input_rect,1)
             flag = True
 
+        pygame.draw.rect(screen, WHITE, percentage_quarantine_back_rect)
         if percentage_quarantine_text_active == True:
             pygame.draw.rect(screen, GREY, percentage_quarantine_input_rect,1)
         else:
@@ -632,32 +639,59 @@ def menu():
 
         # Menu Text
         menu_text = sim_font_large.render("Epidemic Simulator",True,BLACK)
-        screen.blit(menu_text,(250,100))
+        screen.blit(menu_text,(250,90))
 
+        # Instructions text
+        string_one = "Welcome to Epidemic Simulator, this program simulates the spread of a fake"
+        string_two = "disease through a population. You can select:"
+        string_three = "1. How contagious infected balls are (between 1 and 5)"
+        string_four = "2. How long the infection lasts (between 1 and 2500)"
+        string_five = "3. How lethal the infection is (between 0 and 1)"
+        string_six = "4. How large the population is (between 2 and 2500)"
+        string_seven = "5. What percentage of the population quarantines (between 0 and 1)"
+
+        
+        line_one = sim_font_small.render(string_one, True, BLACK)
+        line_two = sim_font_small.render(string_two, True, BLACK)
+        line_three = sim_font_small.render(string_three, True, BLACK)
+        line_four = sim_font_small.render(string_four, True, BLACK)
+        line_five = sim_font_small.render(string_five, True, BLACK)
+        line_six = sim_font_small.render(string_six, True, BLACK)
+        line_seven = sim_font_small.render(string_seven, True, BLACK)
+
+        screen.blit(line_one,(150,140))
+        screen.blit(line_two,(120,158))
+        screen.blit(line_three,(180,190))
+        screen.blit(line_four,(180,208))
+        screen.blit(line_five,(180,226))
+        screen.blit(line_six,(180,244))
+        screen.blit(line_seven,(180,262))
+
+        # Parameter input text
         population_text = sim_font_small.render("Initial Population",True,BLACK)
-        screen.blit(population_text,(238,440))
+        screen.blit(population_text,(238,460))
         population_subtext = sim_font_vsmall.render("How large is the population?",True,BLACK)
-        screen.blit(population_subtext,(238,457))        
+        screen.blit(population_subtext,(238,477))        
 
         infect_time_text = sim_font_small.render("Length of Infection",True,BLACK)
-        screen.blit(infect_time_text,(238,400))
+        screen.blit(infect_time_text,(238,420))
         infect_time_subtext = sim_font_vsmall.render("How long does the infection last?",True,BLACK)
-        screen.blit(infect_time_subtext,(238,417))  
+        screen.blit(infect_time_subtext,(238,437))  
 
         infect_prob_text = sim_font_small.render("Contagiousness",True,BLACK)
-        screen.blit(infect_prob_text,(238,280))
+        screen.blit(infect_prob_text,(238,300))
         infect_prob_subtext = sim_font_vsmall.render("How contagious is the disease?",True,BLACK)
-        screen.blit(infect_prob_subtext,(238,297))  
+        screen.blit(infect_prob_subtext,(238,317))  
 
         death_text = sim_font_small.render("Death Rate",True,BLACK)
-        screen.blit(death_text,(238,320))
+        screen.blit(death_text,(238,340))
         death_subtext = sim_font_vsmall.render("What is the fatality rate?",True,BLACK)
-        screen.blit(death_subtext,(238,337))  
+        screen.blit(death_subtext,(238,357))  
 
         quarantine_text = sim_font_small.render("Quarantine Rate",True,BLACK)
-        screen.blit(quarantine_text,(238,360))       
-        quarantine_subtext = sim_font_vsmall.render("What percent of the population quarantines?",True,BLACK)
-        screen.blit(quarantine_subtext,(238,377))  
+        screen.blit(quarantine_text,(238,380))       
+        quarantine_subtext = sim_font_vsmall.render("What percentage quarantines?",True,BLACK)
+        screen.blit(quarantine_subtext,(238,397))  
 
         pygame.display.update()
         menu_clock.tick(30)
