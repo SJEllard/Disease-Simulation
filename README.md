@@ -10,7 +10,7 @@ can select how contagious the infection is, how long the infection lasts, and th
 
 ![](https://github.com/SJEllard/Disease-Simulation/blob/master/images/menu.png)
 
-
+![](https://github.com/SJEllard/Disease-Simulation/blob/master/images/gif1.gif)
 
 ---
 
