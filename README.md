@@ -8,11 +8,12 @@ The simulation starts with one infected ball in a large population. Balls float 
 and when they touch infected balls have a chance to pass on the disease to healthy balls. The user
 can select how contagious the infection is, how long the infection lasts, and the fatality rate. The user can also select how large the starting population is, and what percentage of the population chooses to quarantine.
 
-<p align='center'>
 ![](https://github.com/SJEllard/Disease-Simulation/blob/master/images/menugif.gif)
 
+A typical simulation will look something like this...
+
 ![](https://github.com/SJEllard/Disease-Simulation/blob/master/images/gif1.gif)
-</p>
+
 ---
 
 Epidemic Simulator is written in Python 3 and uses the PyGame library. You can visit the PyGame Github page here: <a href="https://github.com/pygame" target="_top">github.com/pygame</a>
