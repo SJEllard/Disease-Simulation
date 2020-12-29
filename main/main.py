@@ -9,19 +9,22 @@ some other paramters. Some basic results & stats are graphed/displayed on the sc
 
 version 2: Added menu and ability for user to change parameter values
 
-Last updated: 2020-12-27
+Last updated: 2020-12-28
 
 Possible future updates:
 - Add increased death rate if certain % of population infected (hospital capicity)
 - Fix top left corner flashing ball bug
-- Add instructions
-- Clean code (put ball and sim in their own file?)
+- Add instructions to main menu
+- compute & show r0
+- have input parameters saved so that if user returns to menu inputs
+have the most recent values  
 """
 
+from ball import Ball
 import numpy as np
 import pygame
-import random
 import sys
+import math 
 
 
 # Color Palette
@@ -49,77 +52,6 @@ deaths = 0
 attack_rate = 0
 n_recovered = 0
 n_infected = 0
-
-# Ball Constructor
-class Ball(pygame.sprite.Sprite):
-    def __init__(
-        self,
-        x,
-        y,
-        width,
-        height,
-        color=GREY,
-        radius=5,
-        velocity=[0,0],
-    ):
-        super().__init__()
-        self.image = pygame.Surface(
-            [radius*2,radius*2]
-        )
-        self.image.fill(BACKGROUND)
-        pygame.draw.circle(
-            self.image, color, (radius, radius), radius
-        )
-
-        self.rect = self.image.get_rect()
-        self.pos = np.array([x,y], dtype=np.float64)
-        self.vel = np.asarray(velocity,dtype=np.float64)
-
-        self.infected = False
-        self.recovered = False
-
-        self.WIDTH=width
-        self.HEIGHT=height
-    
-    def update(self):
-        self.pos += self.vel
-        x,y=self.pos
-
-        # Bounce off the walls
-        if x <= 0 or x >= self.WIDTH - 10: 
-            self.vel[0] *= -1
-        if y <= 0 or y >= self.HEIGHT - 10: 
-            self.vel[1] *= -1
-
-        self.rect.x=x
-        self.rect.y=y
-
-        if self.infected:
-            self.infection_time -= 1
-
-            if self.infection_time == 0:
-                self.infected = False
-                num = np.random.rand()
-                if self.death_rate > num:
-                    #built in function in sprite class
-                    self.kill()
-                else:
-                    self.recovered = True
-
-    def respawn(self,color,radius=5):
-        return Ball(
-            self.rect.x,
-            self.rect.y,
-            self.WIDTH,
-            self.HEIGHT,
-            color=color,
-            velocity=self.vel
-        )
- 
-    def infection(self, infection_time=infection_time, death_rate=death_rate):
-        self.infected=True
-        self.infection_time=infection_time
-        self.death_rate=death_rate
 
 # Simulation Constructor
 class Sim:
@@ -511,7 +443,7 @@ def menu():
                 percentage_quarantine=float(percentage_quarantine_text)
 
                 sim = Sim()
-                sim.n_susceptible=int(starting_pop-starting_pop*percentage_quarantine - 1)
+                sim.n_susceptible=math.ceil(starting_pop-starting_pop*percentage_quarantine - 1)
                 sim.n_infected=1
                 sim.n_quarantined=int(starting_pop*percentage_quarantine)
                 sim.percentage_quarantine=percentage_quarantine
@@ -618,6 +550,8 @@ def menu():
                         percentage_quarantine_text += event.unicode
 
         # Inputs
+
+        # flag if wrong input type
         flag = False
 
         if pop_text_active == True:
