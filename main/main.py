@@ -190,7 +190,7 @@ class Sim:
         # SIM LOOP
         simulate, click = True, False
         k=0
-        value = ((self.infection_prob+1)/5)**5
+        value = ((self.infection_prob-3)/5)**3+0.08
 
         while simulate:
             self.population_container.update()
@@ -248,8 +248,11 @@ class Sim:
 
             # INFECTION PROB
             num = np.random.rand()
-            
-            if num >= 1- value:
+            if n_infected >= 1:
+                y = value/(np.log(n_infected+sys.float_info.epsilon)**(1/2))
+            else:
+                y = sys.float_info.epsilon
+            if num >= 1 - y:
                 infected_collision_group = pygame.sprite.groupcollide(
                 self.susceptible_container,self.infected_container,True,False)
                 for ball in infected_collision_group:
@@ -564,7 +567,7 @@ def menu():
         screen.blit(population_size_surface, (population_input_rect.x+4,population_input_rect.y+4))
         try:
             population_size = int(population_size_text)
-            if population_size > 2500 or population_size < 2:
+            if population_size > 2000 or population_size < 2:
                 flag = True
                 pygame.draw.rect(screen, RED, population_input_rect,1)
         except:
@@ -580,7 +583,7 @@ def menu():
         screen.blit(infection_time_surface, (infection_time_input_rect.x+4,infection_time_input_rect.y+4))
         try:
             infection_time = int(infection_time_text)
-            if infection_time > 2500 or infection_time < 1:
+            if infection_time > 1000 or infection_time < 1:
                 flag = True
                 pygame.draw.rect(screen, RED, infection_time_input_rect,1)
         except:  
@@ -644,9 +647,9 @@ def menu():
         string_one = "Welcome to Epidemic Simulator, this program simulates the spread of a fake"
         string_two = "disease through a population. You can select:"
         string_three = "1. How contagious infected balls are (between 1 and 5)"
-        string_four = "2. How long the infection lasts (between 1 and 2500)"
+        string_four = "2. How long the infection lasts (between 1 and 1000)"
         string_five = "3. How lethal the infection is (between 0 and 1)"
-        string_six = "4. How large the population is (between 2 and 2500)"
+        string_six = "4. How large the population is (between 2 and 2000)"
         string_seven = "5. What percentage of the population quarantines (between 0 and 1)"
 
         
