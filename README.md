@@ -8,7 +8,7 @@ The simulation starts with one infected ball in a large population. Balls float 
 and when they touch infected balls have a chance to pass on the disease to healthy balls. The user
 can select how contagious the infection is, how long the infection lasts, and the fatality rate. The user can also select how large the starting population is, and what percentage of the population chooses to quarantine.
 
-![](https://github.com/SJEllard/Disease-Simulation/blob/master/images/menugif.png)
+![](https://github.com/SJEllard/Disease-Simulation/blob/master/images/menugif.gif)
 
 ![](https://github.com/SJEllard/Disease-Simulation/blob/master/images/gif1.gif)
 
