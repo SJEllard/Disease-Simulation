@@ -6,7 +6,9 @@ Welcome to Epidemic Simulator. This program simulates the spread of a fake disea
 
 The simulation starts with one infected ball in a large population. Balls float around the screen
 and when they touch infected balls have a chance to pass on the disease to healthy balls. The user
-can select how contagious the infection is, how long the infection lasts, and the fatality rate. The user can also select how large the starting population is, and what percentage chooses of the population to quarantine.
+can select how contagious the infection is, how long the infection lasts, and the fatality rate. The user can also select how large the starting population is, and what percentage of the population chooses to quarantine.
+
+![](https://github.com/SJEllard/Disease-Simulation/blob/master/images/menu.png)
 
 
 
