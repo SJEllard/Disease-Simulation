@@ -1,23 +1,24 @@
 """
 Epidemic Simulator: 
+
 Simulates the spread of a virus. The simulation starts with
 some population of "healthy balls" and one (or more) "infected balls", which float around
 the screen in a random direction. If an infected ball collides with a healthy ball there
 is some chance it passes on the infection. User can choose for some percent of the population
-to "quarantine" (move at near zero velocity), time of infection, probability of infection, and 
-some other paramters. Some basic results & stats are graphed/displayed on the screen
+to "quarantine" (move at near zero velocity), time of infection, contagiousness, and 
+some other paramters. Some basic results & stats are graphed/displayed on the simulation 
+screen.
 
 version 2: Added menu and ability for user to change parameter values
 
-Last updated: 2020-12-28
+Last updated: 2020-12-29
 
 Possible future updates:
 - Add increased death rate if certain % of population infected (hospital capicity)
 - Fix top left corner flashing ball bug
-- Add instructions to main menu
 - compute & show r0
 - have input parameters saved so that if user returns to menu inputs
-have the most recent values  
+have the most recent values
 """
 
 from ball import Ball
