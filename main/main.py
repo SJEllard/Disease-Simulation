@@ -25,6 +25,7 @@ import numpy as np
 import pygame
 import sys
 import math 
+import os
 
 # Color Palette
 WHITE=(255,255,255)
@@ -173,7 +174,9 @@ class Sim:
         pygame.display.set_caption("Epidemic Simulator")
         
         # Icon by Freepik: https://www.freepik.com/
-        icon = pygame.image.load('/Users/Shane/projects/diseasesim/Disease-Simulation/images/coronavirus.png')
+        base_path = os.path.join(os.path.dirname(__file__),os.pardir)
+        icon_path = os.path.join(base_path, "images/coronavirus.png")
+        icon = pygame.image.load(icon_path)
         pygame.display.set_icon(icon)
 
         graph = pygame.Surface((self.WIDTH//4,self.HEIGHT//4))
@@ -186,6 +189,7 @@ class Sim:
         # SIM LOOP
         simulate, click = True, False
         k=0
+        value = ((self.infection_prob+1)/5)**5
 
         while simulate:
             self.population_container.update()
@@ -241,30 +245,21 @@ class Sim:
             graph_fig[t, :y_dead] = pygame.Color(*YELLOW)
             graph_fig[t, y_dead:y_dead+y_recovered] = pygame.Color(*BLUE)
 
-            # Balls bounce off each other
-
             # INFECTION PROB
             num = np.random.rand()
-            value = (self.infection_prob/5)**4
             
-            if num >= 1 - value:
+            if num >= 1- value:
                 infected_collision_group = pygame.sprite.groupcollide(
-                    self.susceptible_container,
-                    self.infected_container,
-                    True,
-                    False
-                )
-
+                self.susceptible_container,self.infected_container,True,False)
                 for ball in infected_collision_group:
                     new_ball = ball.respawn(RED)
                     num = np.random.rand()
                     if num > self.percentage_quarantine:
                         r = np.random.rand(2)*4-2
-                        new_ball.vel = -r
+                        new_ball.vel = r
                     else:
-                        # or [0,0]
                         r = np.random.rand(2)*0.07-0.035
-                        new_ball.vel = -r
+                        new_ball.vel = r
 
                     new_ball.infection(
                             infection_time = self.infection_time,
@@ -371,7 +366,10 @@ def menu():
 
     pygame.display.set_caption("Epidemic Simulator: Menu")
     
-    icon = pygame.image.load('/Users/Shane/projects/diseasesim/Disease-Simulation/images/coronavirus.png')
+    base_path = os.path.join(os.path.dirname(__file__),os.pardir)
+    icon_path = os.path.join(base_path, "images/coronavirus.png")
+    icon = pygame.image.load(icon_path)
+
     pygame.display.set_icon(icon)
 
     menu_clock = pygame.time.Clock() 
@@ -639,7 +637,7 @@ def menu():
 
         # Menu Text
         menu_text = sim_font_large.render("Epidemic Simulator",True,BLACK)
-        screen.blit(menu_text,(250,90))
+        screen.blit(menu_text,(250,60))
 
         # Instructions text
         string_one = "Welcome to Epidemic Simulator, this program simulates the spread of a fake"
