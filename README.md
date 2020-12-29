@@ -1,7 +1,5 @@
 # Epidemic Simulator
 
----
-
 Welcome to Epidemic Simulator. This program simulates the spread of a fake disease through a population. 
 
 The simulation starts with one infected ball in a large population. Balls float around the screen
@@ -10,7 +8,7 @@ can select how contagious the infection is, how long the infection lasts, and th
 
 ![](https://github.com/SJEllard/Disease-Simulation/blob/master/images/menugif.gif)
 
-A typical simulation will look something like this...
+Once started, a typical simulation will look something like this... 
 
 ![](https://github.com/SJEllard/Disease-Simulation/blob/master/images/gif1.gif)
 
