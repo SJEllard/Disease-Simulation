@@ -190,7 +190,7 @@ class Sim:
         # SIM LOOP
         simulate, click = True, False
         k=0
-        value = ((self.infection_prob-3)/5)**3+0.08
+        value = ((self.infection_prob)/5)**3
 
         while simulate:
             self.population_container.update()
@@ -249,7 +249,7 @@ class Sim:
             # INFECTION PROB
             num = np.random.rand()
             if n_infected >= 1:
-                y = value/(np.log(n_infected+sys.float_info.epsilon)**(1/2))
+                y = value/((n_infected+sys.float_info.epsilon)**(1/8))
             else:
                 y = sys.float_info.epsilon
             if num >= 1 - y:
